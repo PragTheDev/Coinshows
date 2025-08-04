@@ -14,7 +14,7 @@ export default function ShowList({
       <div className="text-center py-12">
         <div className="flex items-center justify-center mb-4">
           <svg
-            className="animate-spin h-8 w-8 text-blue-600"
+            className="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400"
             viewBox="0 0 24 24"
           >
             <circle
@@ -33,10 +33,12 @@ export default function ShowList({
             />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           Loading Texas Coin Shows...
         </h3>
-        <p className="text-gray-600">Fetching real data from Coinzip.com</p>
+        <p className="text-gray-600 dark:text-gray-300">
+          Fetching real data from Coinzip.com
+        </p>
       </div>
     );
   }
@@ -45,11 +47,15 @@ export default function ShowList({
     <>
       {/* Results Header */}
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           {activeFilter === "All Shows" ? "Texas Coin Shows" : activeFilter} (
           {shows.length} found)
         </h3>
-        <Button variant="ghost" size="sm" className="text-blue-600">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-blue-600 dark:text-blue-400"
+        >
           View on Map
         </Button>
       </div>
@@ -60,11 +66,13 @@ export default function ShowList({
           shows.map((show) => <CoinShowCard key={show.id} show={show} />)
         ) : (
           <div className="col-span-full text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="text-gray-400 dark:text-gray-500 text-6xl mb-4">
+              🔍
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               No shows found
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Try adjusting your search terms or filters
             </p>
             <Button

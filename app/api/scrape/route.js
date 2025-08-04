@@ -66,6 +66,7 @@ export async function GET(request) {
     });
 
     console.log(`✅ Successfully scraped ${shows.length} Texas coin shows!`);
+    console.log(`Total shows found: ${showCount}`);
 
     return Response.json({
       success: true,

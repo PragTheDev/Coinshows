@@ -85,7 +85,7 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors">
       <Header onAddShowClick={() => setShowAddShowModal(true)} />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
@@ -96,8 +96,10 @@ export default function Home() {
 
         {/* Loading Status */}
         {loadingStatus && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-8 text-center">
-            <p className="text-sm font-medium text-blue-600">{loadingStatus}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8 text-center">
+            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+              {loadingStatus}
+            </p>
           </div>
         )}
 

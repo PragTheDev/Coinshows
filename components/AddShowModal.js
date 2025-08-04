@@ -73,7 +73,7 @@ export default function AddShowModal({ isOpen, onClose }) {
               <textarea
                 name="description"
                 rows="3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Brief description of the coin show..."
               />
             </div>

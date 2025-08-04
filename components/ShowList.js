@@ -8,6 +8,7 @@ export default function ShowList({
   setSearchTerm,
   setActiveFilter,
   isLoading = false,
+  selectedState = "TX",
 }) {
   if (isLoading) {
     return (
@@ -34,10 +35,10 @@ export default function ShowList({
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Loading Texas Coin Shows...
+          Loading {selectedState} Coin Shows...
         </h3>
         <p className="text-gray-600 dark:text-gray-300">
-          Fetching real data from Coinzip.com
+          (Fetching real data from Coinzip.com)
         </p>
       </div>
     );
@@ -48,8 +49,10 @@ export default function ShowList({
       {/* Results Header */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {activeFilter === "All Shows" ? "Texas Coin Shows" : activeFilter} (
-          {shows.length} found)
+          {activeFilter === "All Shows"
+            ? `${selectedState} Coin Shows`
+            : activeFilter}{" "}
+          ({shows.length} found)
         </h3>
         <Button
           variant="ghost"

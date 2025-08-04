@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { requestUserLocation, filterShows } from "@/utils/showUtils";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import StateSelector from "@/components/StateSelector";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import ShowList from "@/components/ShowList";
 import AddShowModal from "@/components/AddShowModal";
@@ -18,28 +19,35 @@ export default function Home() {
   const [shows, setShows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingStatus, setLoadingStatus] = useState(
-    "🕷️ Loading Texas coin shows..."
+    "🕷️ Loading coin shows..."
   );
+  const [selectedState, setSelectedState] = useState("TX");
 
-  // Auto-load Texas shows on component mount
+  // Auto-load shows for selected state on component mount and state change
   useEffect(() => {
-    const loadTexasShows = async () => {
+    const loadShows = async () => {
       setIsLoading(true);
-      setLoadingStatus("🕷️ Loading Texas coin shows from Coinzip...");
+      setLoadingStatus(
+        `🕷️ Loading ${selectedState} coin shows from Coinzip...`
+      );
 
       try {
-        const response = await fetch("/api/scrape");
+        const response = await fetch(`/api/scrape?state=${selectedState}`);
         const data = await response.json();
 
         if (data.success && data.shows.length > 0) {
           setShows(data.shows);
-          setLoadingStatus(`✅ Loaded ${data.shows.length} Texas coin shows`);
+          setLoadingStatus(
+            `✅ Loaded ${data.shows.length} ${selectedState} coin shows`
+          );
 
           setTimeout(() => {
             setLoadingStatus("");
           }, 2000);
         } else {
-          setLoadingStatus("❌ No shows found or scraping failed");
+          setLoadingStatus(
+            `❌ No shows found for ${selectedState} or scraping failed`
+          );
           setShows([]);
 
           setTimeout(() => {
@@ -48,7 +56,7 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Loading error:", error);
-        setLoadingStatus("❌ Error loading coin shows");
+        setLoadingStatus(`❌ Error loading ${selectedState} coin shows!`);
         setShows([]);
 
         setTimeout(() => {
@@ -59,8 +67,8 @@ export default function Home() {
       }
     };
 
-    loadTexasShows();
-  }, []);
+    loadShows();
+  }, [selectedState]);
 
   // Handle location request
   const handleRequestLocation = async () => {
@@ -76,9 +84,16 @@ export default function Home() {
     }
   };
 
+  // Handle state change
+  const handleStateChange = (newState) => {
+    setSelectedState(newState);
+    setActiveFilter("All Shows");
+    setSearchTerm("");
+  };
+
   // Get filtered shows
   const filteredShows = filterShows(
-    shows, // Use dynamic shows instead of sampleShows
+    shows,
     searchTerm,
     activeFilter,
     userLocation
@@ -93,6 +108,15 @@ export default function Home() {
           onRequestLocation={handleRequestLocation}
           locationPermission={locationPermission}
         />
+
+        {/* State Selector */}
+        <div className="flex justify-center mb-8">
+          <StateSelector
+            selectedState={selectedState}
+            onStateChange={handleStateChange}
+            isLoading={isLoading}
+          />
+        </div>
 
         {/* Loading Status */}
         {loadingStatus && (
@@ -118,6 +142,7 @@ export default function Home() {
           setSearchTerm={setSearchTerm}
           setActiveFilter={setActiveFilter}
           isLoading={isLoading}
+          selectedState={selectedState}
         />
       </main>
 

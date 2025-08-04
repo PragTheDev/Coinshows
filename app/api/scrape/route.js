@@ -3,10 +3,13 @@ import * as cheerio from "cheerio";
 
 export async function GET(request) {
   try {
-    console.log("🕷️ Starting Texas coin show scraping...");
+    const { searchParams } = new URL(request.url);
+    const state = searchParams.get("state") || "TX"; // Default to Texas
+
+    console.log(`🕷️ Starting ${state} coin show scraping...`);
 
     const response = await axios.get(
-      "https://www.coinzip.com/index.php?state=TX",
+      `https://www.coinzip.com/index.php?state=${state}`,
       {
         headers: {
           "User-Agent":
@@ -23,7 +26,7 @@ export async function GET(request) {
       }
     );
 
-    console.log("✅ Successfully fetched Coinzip Texas page!");
+    console.log(`✅ Successfully fetched Coinzip ${state} page!`);
 
     const $ = cheerio.load(response.data);
     const shows = [];
@@ -52,7 +55,7 @@ export async function GET(request) {
               cityText
             )} - check Coinzip for full details.`,
             source: "coinzip",
-            state: "TX",
+            state: state,
             url: `https://www.coinzip.com/${$link.attr("href")}`,
           };
 
@@ -65,16 +68,16 @@ export async function GET(request) {
       }
     });
 
-    console.log(`✅ Successfully scraped ${shows.length} Texas coin shows!`);
+    console.log(`✅ Successfully scraped ${shows.length} ${state} coin shows!`);
     console.log(`Total shows found: ${showCount}`);
 
     return Response.json({
       success: true,
-      message: `Successfully scraped ${shows.length} Texas coin shows`,
+      message: `Successfully scraped ${shows.length} ${state} coin shows`,
       shows: shows,
       scrapedAt: new Date().toISOString(),
       source: "coinzip",
-      state: "TX",
+      state: state,
     });
   } catch (error) {
     console.error("❌ Scraping failed! :", error);

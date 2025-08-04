@@ -1,16 +1,49 @@
 import { Button } from "@/components/ui/button";
 
+// Sample coin show data (temporary - later we'll get this from a database)
+const sampleShows = [
+  {
+    id: 1,
+    name: "Chicago Coin & Currency Show",
+    date: "March 15, 2025",
+    location: "Chicago, IL",
+    venue: "Chicago Convention Center",
+    description:
+      "One of the Midwest's largest coin shows featuring dealers from across the country.",
+  },
+  {
+    id: 2,
+    name: "California Numismatic Society Show",
+    date: "March 22, 2025",
+    location: "Los Angeles, CA",
+    venue: "LA Convention Center",
+    description:
+      "Annual show featuring rare coins, currency, and collectibles.",
+  },
+  {
+    id: 3,
+    name: "New York Coin Expo",
+    date: "April 5, 2025",
+    location: "New York, NY",
+    venue: "Javits Center",
+    description:
+      "Premier East Coast coin show with international dealers and exhibits.",
+  },
+];
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-blue-600">CoinShows</h1>
-            <p className="text-gray-600 mt-2 text-lg">
-              Find coin shows and numismatic events near you
-            </p>
+        <div className="px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-start items-center">
+            <div>
+              <h1 className="text-4xl font-bold text-blue-600">CoinShows</h1>
+              <p className="text-gray-600 mt-2 text-lg">
+                Find coin shows and numismatic events near you
+              </p>
+            </div>
           </div>
         </div>
       </header>
@@ -31,14 +64,71 @@ export default function Home() {
           </Button>
         </div>
 
-        {/* Placeholder for future content */}
-        <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Coming Soon
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="max-w-md mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search coin shows by name or location..."
+                className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <span className="text-gray-400">🔍</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Filter Buttons */}
+        <div className="mb-8">
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button variant="outline" size="sm" className="text-sm">
+              This Month
+            </Button>
+            <Button variant="outline" size="sm" className="text-sm">
+              Next Month
+            </Button>
+            <Button variant="outline" size="sm" className="text-sm">
+              Near Me
+            </Button>
+            <Button variant="outline" size="sm" className="text-sm">
+              All Shows
+            </Button>
+          </div>
+        </div>
+
+        {/* Results Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Upcoming Coin Shows ({sampleShows.length} found)
           </h3>
-          <p className="text-gray-500">
-            Coin show listings and search functionality will appear here
-          </p>
+          <Button variant="ghost" size="sm" className="text-blue-600">
+            View on Map
+          </Button>
+        </div>
+
+        {/* Coin Show Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sampleShows.map((show) => (
+            <div
+              key={show.id}
+              className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+            >
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {show.name}
+              </h3>
+              <div className="space-y-2 mb-4">
+                <p className="text-blue-600 font-medium">📅 {show.date}</p>
+                <p className="text-gray-600">📍 {show.location}</p>
+                <p className="text-gray-600">🏢 {show.venue}</p>
+              </div>
+              <p className="text-gray-700 text-sm mb-4">{show.description}</p>
+              <Button variant="outline" className="w-full">
+                View Details
+              </Button>
+            </div>
+          ))}
         </div>
       </main>
 

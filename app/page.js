@@ -1,4 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useUser, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 // Sample coin show data (temporary - later we'll get this from a database)
 const sampleShows = [
@@ -24,7 +28,7 @@ const sampleShows = [
     id: 3,
     name: "New York Coin Expo",
     date: "April 5, 2025",
-    location: "New York, NY",
+    location: "New York, NJ",
     venue: "Javits Center",
     description:
       "Premier East Coast coin show with international dealers and exhibits.",
@@ -32,6 +36,9 @@ const sampleShows = [
 ];
 
 export default function Home() {
+  const { isSignedIn, user } = useUser();
+  const [showAddShowModal, setShowAddShowModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -67,12 +74,46 @@ export default function Home() {
               >
                 About
               </a>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 shadow-md"
-              >
-                Sign In
-              </Button>
+
+              {isSignedIn ? (
+                <div className="flex items-center space-x-4">
+                  <Button
+                    size="sm"
+                    onClick={() => setShowAddShowModal(true)}
+                    className="bg-green-600 hover:bg-green-700 shadow-md"
+                  >
+                    Add Show
+                  </Button>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">
+                      Welcome,{" "}
+                      {user?.firstName ||
+                        user?.emailAddresses?.[0]?.emailAddress?.split("@")[0]}
+                    </span>
+                    <UserButton afterSignOutUrl="/" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <SignInButton mode="modal">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                      Sign In
+                    </Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 shadow-md"
+                    >
+                      Sign Up
+                    </Button>
+                  </SignUpButton>
+                </div>
+              )}
             </nav>
           </div>
         </div>
@@ -161,6 +202,103 @@ export default function Home() {
           ))}
         </div>
       </main>
+
+      {/* Add Show Modal */}
+      {showAddShowModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              Add New Coin Show
+            </h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                // In a real app, you'd send this to your backend
+                alert("Show submitted for review! (This is just a demo)");
+                setShowAddShowModal(false);
+              }}
+            >
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Show Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Denver Coin Show"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Location *
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Denver, CO"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Venue *
+                  </label>
+                  <input
+                    type="text"
+                    name="venue"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., Denver Convention Center"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    rows="3"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Brief description of the coin show..."
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between space-x-4 mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddShowModal(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 flex-1"
+                >
+                  Submit Show
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-white border-t mt-auto">

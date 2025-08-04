@@ -9,7 +9,7 @@ const sampleShows = [
   {
     id: 1,
     name: "Chicago Coin & Currency Show",
-    date: "March 15, 2025",
+    date: "2025-03-15",
     location: "Chicago, IL",
     venue: "Chicago Convention Center",
     description:
@@ -18,7 +18,7 @@ const sampleShows = [
   {
     id: 2,
     name: "California Numismatic Society Show",
-    date: "March 22, 2025",
+    date: "2025-03-22",
     location: "Los Angeles, CA",
     venue: "LA Convention Center",
     description:
@@ -27,17 +27,165 @@ const sampleShows = [
   {
     id: 3,
     name: "New York Coin Expo",
-    date: "April 5, 2025",
-    location: "New York, NJ",
+    date: "2025-04-05",
+    location: "New York, NY",
     venue: "Javits Center",
     description:
       "Premier East Coast coin show with international dealers and exhibits.",
+  },
+  {
+    id: 4,
+    name: "Texas State Coin Show",
+    date: "2025-03-28",
+    location: "Dallas, TX",
+    venue: "Dallas Market Hall",
+    description:
+      "Largest coin show in Texas with over 200 dealers and special exhibits.",
+  },
+  {
+    id: 5,
+    name: "Florida United Numismatists Convention",
+    date: "2025-04-12",
+    location: "Orlando, FL",
+    venue: "Orange County Convention Center",
+    description:
+      "Premier Florida coin show featuring ancient coins, world coins, and US rarities.",
+  },
+  {
+    id: 6,
+    name: "Denver Coin & Collectibles Show",
+    date: "2025-03-30",
+    location: "Denver, CO",
+    venue: "National Ballpark Museum",
+    description:
+      "Mountain West's favorite coin show with family-friendly atmosphere.",
+  },
+  {
+    id: 7,
+    name: "Philadelphia Coin & Currency Show",
+    date: "2025-04-18",
+    location: "Philadelphia, PA",
+    venue: "Pennsylvania Convention Center",
+    description: "Historic coin show in the birthplace of American coinage.",
+  },
+  {
+    id: 8,
+    name: "Seattle Numismatic Society Spring Show",
+    date: "2025-04-25",
+    location: "Seattle, WA",
+    venue: "Seattle Center Exhibition Hall",
+    description: "Pacific Northwest premier coin and currency exhibition.",
+  },
+  {
+    id: 9,
+    name: "Atlanta Coin Show",
+    date: "2025-03-08",
+    location: "Atlanta, GA",
+    venue: "Cobb Galleria Centre",
+    description:
+      "Southeast's leading coin show with educational seminars and auctions.",
+  },
+  {
+    id: 10,
+    name: "Phoenix Coin Club Show",
+    date: "2025-04-02",
+    location: "Phoenix, AZ",
+    venue: "Arizona State Fairgrounds",
+    description:
+      "Desert Southwest coin show featuring Western and territorial coins.",
   },
 ];
 
 export default function Home() {
   const { isSignedIn, user } = useUser();
   const [showAddShowModal, setShowAddShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All Shows");
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationPermission, setLocationPermission] = useState("unknown"); // "unknown", "granted", "denied"
+
+  // Request user location
+  const requestLocation = () => {
+    if ("geolocation" in navigator) {
+      setLocationPermission("requesting");
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          setLocationPermission("granted");
+          setActiveFilter("Near Me");
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setLocationPermission("denied");
+          // Fallback to showing all shows
+          alert("Location access denied. Showing all shows instead.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+      setLocationPermission("denied");
+    }
+  };
+
+  // Helper function to format dates nicely
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Filter shows based on search and active filter
+  const filteredShows = sampleShows.filter((show) => {
+    const matchesSearch =
+      show.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      show.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      show.venue.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const currentDate = new Date();
+    const showDate = new Date(show.date);
+
+    if (activeFilter === "This Month") {
+      const isThisMonth =
+        showDate.getMonth() === currentDate.getMonth() &&
+        showDate.getFullYear() === currentDate.getFullYear();
+      return matchesSearch && isThisMonth;
+    } else if (activeFilter === "Next Month") {
+      const nextMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        1
+      );
+      const isNextMonth =
+        showDate.getMonth() === nextMonth.getMonth() &&
+        showDate.getFullYear() === nextMonth.getFullYear();
+      return matchesSearch && isNextMonth;
+    } else if (activeFilter === "Near Me") {
+      if (userLocation) {
+        // If we have real location, show shows from nearby states (simplified logic)
+        // In a real app, you'd calculate actual distances
+        const nearbyStates = ["CA", "IL", "NY", "TX", "FL"]; // Popular states for demo.
+        const isNearby = nearbyStates.some((state) =>
+          show.location.includes(state)
+        );
+        return matchesSearch && isNearby;
+      } else {
+        // Fallback: show some popular locations
+        const popularStates = ["CA", "IL", "NY", "TX", "NJ"];
+        const isPopular = popularStates.some((state) =>
+          show.location.includes(state)
+        );
+        return matchesSearch && isPopular;
+      }
+    }
+
+    return matchesSearch; // "All Shows"
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -119,20 +267,33 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content*/}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         <div className="text-center mb-12">
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Welcome to CoinShows
+            Welcome to CoinShows!
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mb-8">
             Discover coin shows, numismatic events, and collectible exhibitions
             happening near you. Our platform makes it easy to find and plan your
             next coin collecting adventure.
           </p>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            Find Shows Near Me
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={requestLocation}
+            disabled={locationPermission === "requesting"}
+          >
+            {locationPermission === "requesting"
+              ? "Getting Your Location..."
+              : locationPermission === "granted"
+              ? "✓ Location Enabled - Find More Shows"
+              : "Find Shows Near Me"}
           </Button>
+          {locationPermission === "denied" && (
+            <p className="text-sm text-gray-500 mt-2">
+              Location access denied. Showing popular shows instead.
+            </p>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -141,6 +302,8 @@ export default function Home() {
             <div className="relative">
               <input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search coin shows by name or location..."
                 className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -154,25 +317,33 @@ export default function Home() {
         {/* Quick Filter Buttons */}
         <div className="mb-8">
           <div className="flex flex-wrap justify-center gap-3">
-            <Button variant="outline" size="sm" className="text-sm">
-              This Month
-            </Button>
-            <Button variant="outline" size="sm" className="text-sm">
-              Next Month
-            </Button>
-            <Button variant="outline" size="sm" className="text-sm">
-              Near Me
-            </Button>
-            <Button variant="outline" size="sm" className="text-sm">
-              All Shows
-            </Button>
+            {["This Month", "Next Month", "Near Me", "All Shows"].map(
+              (filter) => (
+                <Button
+                  key={filter}
+                  variant={activeFilter === filter ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveFilter(filter)}
+                  className={`text-sm ${
+                    activeFilter === filter
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : ""
+                  }`}
+                >
+                  {filter}
+                </Button>
+              )
+            )}
           </div>
         </div>
 
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-semibold text-gray-900">
-            Upcoming Coin Shows ({sampleShows.length} found)
+            {activeFilter === "All Shows"
+              ? "Upcoming Coin Shows"
+              : activeFilter}
+            ({filteredShows.length} found)
           </h3>
           <Button variant="ghost" size="sm" className="text-blue-600">
             View on Map
@@ -181,25 +352,46 @@ export default function Home() {
 
         {/* Coin Show Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleShows.map((show) => (
-            <div
-              key={show.id}
-              className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
-            >
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {show.name}
-              </h3>
-              <div className="space-y-2 mb-4">
-                <p className="text-blue-600 font-medium">📅 {show.date}</p>
-                <p className="text-gray-600">📍 {show.location}</p>
-                <p className="text-gray-600">🏢 {show.venue}</p>
+          {filteredShows.length > 0 ? (
+            filteredShows.map((show) => (
+              <div
+                key={show.id}
+                className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {show.name}
+                </h3>
+                <div className="space-y-2 mb-4">
+                  <p className="text-blue-600 font-medium">📅 {show.date}</p>
+                  <p className="text-gray-600">📍 {show.location}</p>
+                  <p className="text-gray-600">🏢 {show.venue}</p>
+                </div>
+                <p className="text-gray-700 text-sm mb-4">{show.description}</p>
+                <Button variant="outline" className="w-full">
+                  View Details
+                </Button>
               </div>
-              <p className="text-gray-700 text-sm mb-4">{show.description}</p>
-              <Button variant="outline" className="w-full">
-                View Details
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="text-gray-400 text-6xl mb-4">🔍</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No shows found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Try adjusting your search terms or filters
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm("");
+                  setActiveFilter("All Shows");
+                }}
+              >
+                Clear Filters
               </Button>
             </div>
-          ))}
+          )}
         </div>
       </main>
 

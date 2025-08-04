@@ -35,15 +35,45 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-start items-center">
+      <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20 sticky top-0 z-50">
+        <div className="px-6 sm:px-8 lg:px-12 py-4">
+          <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold text-blue-600">CoinShows</h1>
-              <p className="text-gray-600 mt-2 text-lg">
-                Find coin shows and numismatic events near you
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                CoinShows
+              </h1>
+              <p className="text-gray-600 text-sm font-medium">
+                Discover coin shows nationwide
               </p>
             </div>
+
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <a
+                href="#"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                Browse
+              </a>
+              <a
+                href="#"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                Events
+              </a>
+              <a
+                href="#"
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                About
+              </a>
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 shadow-md"
+              >
+                Sign In
+              </Button>
+            </nav>
           </div>
         </div>
       </header>

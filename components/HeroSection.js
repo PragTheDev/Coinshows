@@ -6,7 +6,7 @@ export default function HeroSection({ onRequestLocation, locationPermission }) {
       <h2 className="text-2xl font-semibold text-gray-900 mb-4">
         Welcome to CoinShows!
       </h2>
-      <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+      <p className="text-gray-700 max-w-2xl mx-auto mb-8">
         Discover coin shows, numismatic events, and collectible exhibitions
         happening near you. Our platform makes it easy to find and plan your
         next coin collecting adventure.
@@ -24,7 +24,7 @@ export default function HeroSection({ onRequestLocation, locationPermission }) {
       </Button>
       {locationPermission === "denied" && (
         <p className="text-sm text-gray-500 mt-2">
-          Location access was denied. Showing popular shows instead.
+          Location access was denied! Showing popular shows instead.
         </p>
       )}
     </div>

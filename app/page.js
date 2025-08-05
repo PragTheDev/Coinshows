@@ -8,27 +8,30 @@ import StateSelector from "@/components/StateSelector";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import ShowList from "@/components/ShowList";
 import AddShowModal from "@/components/AddShowModal";
+import ShowDetailsModal from "@/components/ShowDetailsModal";
 import Footer from "@/components/Footer";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Home() {
   const [showAddShowModal, setShowAddShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedShow, setSelectedShow] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("All Shows");
   const [userLocation, setUserLocation] = useState(null);
   const [locationPermission, setLocationPermission] = useState("unknown");
   const [shows, setShows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingStatus, setLoadingStatus] = useState(
-    "🕷️ Loading coin shows..."
-  );
   const [selectedState, setSelectedState] = useState("TX");
 
   // Auto-load shows for selected state on component mount and state change
   useEffect(() => {
     const loadShows = async () => {
       setIsLoading(true);
-      setLoadingStatus(
-        `🕷️ Loading ${selectedState} coin shows from Coinzip...`
+
+      // Show loading toast
+      const loadingToast = toast.loading(
+        `Loading ${selectedState} coin shows from Coinzip...`
       );
 
       try {
@@ -37,31 +40,28 @@ export default function Home() {
 
         if (data.success && data.shows.length > 0) {
           setShows(data.shows);
-          setLoadingStatus(
-            `✅ Loaded ${data.shows.length} ${selectedState} coin shows`
-          );
 
-          setTimeout(() => {
-            setLoadingStatus("");
-          }, 2000);
-        } else {
-          setLoadingStatus(
-            `❌ No shows found for ${selectedState} or scraping failed`
+          // Success toast
+          toast.success(
+            `✅ Loaded ${data.shows.length} ${selectedState} coin shows`,
+            { id: loadingToast }
           );
+        } else {
           setShows([]);
 
-          setTimeout(() => {
-            setLoadingStatus("");
-          }, 3000);
+          // Error toast
+          toast.error(`No shows found for ${selectedState}`, {
+            id: loadingToast,
+          });
         }
       } catch (error) {
         console.error("Loading error:", error);
-        setLoadingStatus(`❌ Error loading ${selectedState} coin shows!`);
         setShows([]);
 
-        setTimeout(() => {
-          setLoadingStatus("");
-        }, 3000);
+        // Error toast
+        toast.error(`Error loading ${selectedState} coin shows!`, {
+          id: loadingToast,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -91,6 +91,12 @@ export default function Home() {
     setSearchTerm("");
   };
 
+  // Handle show details view
+  const handleViewDetails = (show) => {
+    setSelectedShow(show);
+    setShowDetailsModal(true);
+  };
+
   // Get filtered shows
   const filteredShows = filterShows(
     shows,
@@ -118,15 +124,6 @@ export default function Home() {
           />
         </div>
 
-        {/* Loading Status */}
-        {loadingStatus && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8 text-center">
-            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-              {loadingStatus}
-            </p>
-          </div>
-        )}
-
         <SearchAndFilter
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -143,6 +140,7 @@ export default function Home() {
           setActiveFilter={setActiveFilter}
           isLoading={isLoading}
           selectedState={selectedState}
+          onViewDetails={handleViewDetails}
         />
       </main>
 
@@ -151,7 +149,34 @@ export default function Home() {
         onClose={() => setShowAddShowModal(false)}
       />
 
+      <ShowDetailsModal
+        show={selectedShow}
+        isOpen={showDetailsModal}
+        onClose={() => {
+          setShowDetailsModal(false);
+          setSelectedShow(null);
+        }}
+      />
+
       <Footer />
+
+      {/* Toast Notifications */}
+      <Toaster
+        position="bottom-left"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "var(--toast-bg)",
+            color: "var(--toast-color)",
+          },
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 4000,
+          },
+        }}
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ export default function ShowList({
   setActiveFilter,
   isLoading = false,
   selectedState = "TX",
+  onViewDetails,
 }) {
   if (isLoading) {
     return (
@@ -66,7 +67,13 @@ export default function ShowList({
       {/* Coin Show Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {shows.length > 0 ? (
-          shows.map((show) => <CoinShowCard key={show.id} show={show} />)
+          shows.map((show) => (
+            <CoinShowCard
+              key={show.id}
+              show={show}
+              onViewDetails={onViewDetails}
+            />
+          ))
         ) : (
           <div className="col-span-full text-center py-12">
             <div className="text-gray-400 dark:text-gray-500 text-6xl mb-4">

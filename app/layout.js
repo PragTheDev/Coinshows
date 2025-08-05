@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Coinshows - Discover Coin Shows Nationwide",
   description:
-    "Find coin shows, numismatic events, and coin collecting opportunities across Texas and beyond.",
+    "Find coin shows, numismatic events, and coin collecting opportunities across Texas and nationwide.",
 };
 
 export default function RootLayout({ children }) {

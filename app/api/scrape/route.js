@@ -48,6 +48,7 @@ export async function GET(request) {
           const show = {
             id: showCount + 1000,
             name: cleanText(showName),
+            title: cleanText(showName), // For the modal
             date: formattedDate,
             location: cleanText(cityText),
             venue: extractVenue(showName, cityText),
@@ -57,6 +58,18 @@ export async function GET(request) {
             source: "coinzip",
             state: state,
             url: `https://www.coinzip.com/${$link.attr("href")}`,
+            // Additional fields for modal (will be populated later if needed)
+            nextDate: formattedDate,
+            address: null,
+            city: cleanText(cityText).split(",")[0],
+            zip: null,
+            contact: null,
+            phone: null,
+            email: null,
+            website: null,
+            time: null,
+            futureDates: [],
+            dealers: [],
           };
 
           shows.push(show);
